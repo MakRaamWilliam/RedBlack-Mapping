@@ -1,9 +1,5 @@
 package eg.edu.alexu.csd.filestructure.redblacktree;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.management.RuntimeErrorException;
 
@@ -131,19 +127,17 @@ public class RedBlackTree<T extends Comparable<T>, V> implements IRedBlackTree {
 
 	@Override
 	public Object search(Comparable key) { if(key == null) throw  new RuntimeErrorException(null);
-		INode node = root;
-		while( node!= null && node.getKey()!= null ) { 
-			if(key.compareTo(node.getKey()) == 0 ) return node.getValue();
-			else if(key.compareTo(node.getKey())>0) node= node.getRightChild();
-			else node =node.getLeftChild();
-		}
-		return null;
+		
+	INode node = searchNode(key);
+	if(node == null) return null;
+		return node.getValue();
 	}
 
 	@Override
 	public boolean contains(Comparable key) { if(key == null) throw  new RuntimeErrorException(null);
   return(search(key) != null );
 	} 
+	
 	private INode searchNode(Comparable key) { if(key == null) throw  new RuntimeErrorException(null);
 	INode node = root;
 	while(node != null && node.getKey()!= null ) {
@@ -158,7 +152,8 @@ public class RedBlackTree<T extends Comparable<T>, V> implements IRedBlackTree {
 	@Override
 	public void insert(Comparable key, Object value) {  if(key == null || value ==null) throw  new RuntimeErrorException(null);
 	     if(root == nill || root ==null) {
-        	root = new Node( key, (V) value); root.setLeftChild(nill); root.setRightChild(nill);
+        	root = new Node( key, (V) value); 
+        	root.setLeftChild(nill); root.setRightChild(nill);
         	size++; root.black=true;
         	return ;
         } Node node = new Node(key, value); 
@@ -168,7 +163,6 @@ public class RedBlackTree<T extends Comparable<T>, V> implements IRedBlackTree {
 	if ( !update ) { 
        CheckColor(node);
        getRoot().setColor(true);
-    //   CheckColor(node);
        } 
 	}
 
@@ -307,146 +301,13 @@ public class RedBlackTree<T extends Comparable<T>, V> implements IRedBlackTree {
 	
 	
 
-/*	@Override
+
+	@Override
 	public boolean delete(Comparable key) { if(key == null ) throw  new RuntimeErrorException(null);
-		Node sel = (Node) searchNode(key);
-		if(sel == null ) return false;
-		Node del = Getdeleted(sel); 
-		sel.value=del.value; sel.key=del.key; 
-		del.key=null; size--;
-		if(del.black == false ) {         //delete leaf red node
-			if(del.isleft) del.parent.lefChild = null;
-			else del.parent.rightChild=null;
-			System.out.println("--305");		 return true;
-		} if(del == root) {
-			root =null;
-			size=0; System.out.println("--308");  return true;
-		}Node parent = del.parent,sibling; 
-		 if(del.isleft ) {   parent.lefChild=null;
-		 if( parent.rightChild ==null) { System.out.println("--311");  return true; }
-		 sibling= parent.rightChild;
-		 if(sibling.lefChild != null && sibling.lefChild.black == false  ) {
-			 RightRotate(sibling);
-			 LeftRotate(parent);
-			 parent.black=true;
-			 sibling.black=true;
-			 parent.parent.black=false;
-			 if(parent.parent.parent == null) { root = parent.parent; parent.parent.black=true; }
-			 System.out.println("--320");		  return true;
-		 }if(sibling.rightChild != null && sibling.rightChild.black == false  ) {
-			 LeftRotate(parent);
-			 sibling.lefChild.black=true;
-			 sibling.rightChild.black=true;
-			 sibling.black=false;
-			 if(sibling.parent == null) { root=sibling; sibling.black=true; }
-			 System.out.println("--327");		 return true;
-		 } 		 
-		 if(sibling.black == true ) { parent.black=true;
-			 sibling.black= false; System.out.println("--330"); pushup(parent);  return true;
-		 }else  {
-			 LeftRotate(parent);
-			 sibling.black=sibling.rightChild.black=sibling.lefChild.black=true;
-			 if(parent.rightChild != null) parent.rightChild.black=false;
-			 System.out.println("--335");		  return true;
-		 }
-		 } else {   del.key=null; parent.rightChild=null;
-		 if( parent.lefChild==null) { System.out.println("--338"); return true; }
-		 sibling= parent.lefChild;
-		 if(sibling.rightChild != null 	 && sibling.rightChild.black == false  ) {
-			 LeftRotate(sibling);
-			 RightRotate(parent);
-			 parent.black=true;
-			 sibling.black=true;
-			 parent.parent.black=false;
-			 if(parent.parent.parent == null) { root = parent.parent; parent.parent.black=true; }
-			 System.out.println("--348");			  return true;
-		 }if(sibling.lefChild != null && sibling.lefChild.black == false  ) {
-			 RightRotate(parent);
-			 sibling.lefChild.black=true;
-			 sibling.rightChild.black=true;
-			 sibling.black=false;
-			 if(sibling.parent == null) { root=sibling; sibling.black=true; }
-			 System.out.println("--355");	  return true;
-		 }if(sibling.black == true ) { parent.black=true;
-		 System.out.println("--357");		 sibling.black= false;  return true;
-	 }else {
-		 RightRotate(parent);
-		 sibling.black=sibling.rightChild.black=sibling.lefChild.black=true;
-		 if(parent.lefChild != null ) parent.lefChild.black=false;
-		System.out.println("--362"); return true;
-	 } 		 			 
-		 }		 
-	}
-
-	private void pushup(Node parent) {
-		   if(parent == null || parent.parent == null) return;
-			if(parent.isleft ) {
-				if(parent.parent.rightChild !=null && parent.parent.rightChild.black==true ) { 
-					parent.parent.rightChild.black=false; parent.parent.black=true;
-				}
-				else {
-				LeftRotate(parent.parent);	parent.black=false; pushup(parent.lefChild);
-				}
-			}else {
-				if(parent.parent.lefChild !=null && parent.parent.lefChild.black==true ) parent.parent.lefChild.black=false;
-			//	else RightRotate(parent.parent);
-			} 
 		
-		
-	}
-
-	private Node Getdeleted(Node sel) { Node temp;
-		if(sel.getLeftChild() == null && sel.getRightChild() == null ) return sel;
-		if(sel.lefChild ==null ) { temp = sel.rightChild;
-		while(temp.getLeftChild() != null ) temp = (Node) temp.getLeftChild();
-			return temp;
-		}if(sel.getRightChild() == null ) { temp = sel.lefChild;
-		while(temp.getRightChild() != null) temp=(Node) temp.getRightChild();
-			return temp;
-		} 
-		    temp = sel.lefChild;
-			while(temp.getRightChild() != null) temp=(Node) temp.getRightChild();
-			if(temp.black == false ) return temp; 
-			temp = sel.rightChild;
-			while(temp.getLeftChild() != null ) temp = (Node) temp.getLeftChild();
-				return temp;
-	} 
-	
-	
-	@Override
-	public boolean delete(Comparable key) {
-		if (key == null)  throw new RuntimeErrorException(null);	
-		if(root == nill) return false;
-		INode sel = searchNode(key);		
-		if(sel == null || sel ==nill) return false;
-		if(sel == root && sel.getLeftChild() == nill && sel.getRightChild() == nill) {
-			root =nill;  return true;
-		}
-		if(sel.getRightChild() == nill ) {
-			INode del = deletleaf(sel);
-			if(!sel.getColor() ) 
-				correctdel(del); 
-	CheckColor((Node) sel);		return true;
-		}
-	  INode del=Min(sel.getRightChild()); 
-	  sel.setKey(del.getKey());
-	  sel.setValue(del.getValue());
-	  sel= del;
-	  INode leaf = deletleaf(sel);
-	  if(!sel.getColor() ) correctdel(leaf);
-	CheckColor((Node) leaf);	return true;
-	} */
-     
-	@Override
-	public boolean delete(Comparable key) {
-		if (key == null) {
-			throw new RuntimeErrorException(null);
-		}
-		
-		if (root == nill) {
+		if (root == nill) 
 			return false;
-		}
-		
+				
 		INode<T,V> node = searchNode(key);
 		
 		if(node == nill || node == null)
@@ -460,31 +321,19 @@ public class RedBlackTree<T extends Comparable<T>, V> implements IRedBlackTree {
 			INode<T,V>node2 = deletleaf(node);
 			if(!node.getColor())
 				correctdel(node2);
-			return true;
-			
+			return true;			
 		}
-		INode<T,V> deletedNode = Min(node.getRightChild());
-		node.setKey(deletedNode.getKey());
-		node.setValue(deletedNode.getValue());
-		node = deletedNode;
-		INode<T,V>node2 = deletleaf(node);
-		//System.out.println(node2.getKey() + "node 2");
+		INode<T,V> leafnode = Min(node.getRightChild());
+		node.setKey(leafnode.getKey());
+		node.setValue(leafnode.getValue());
+		node = leafnode;
+		INode<T,V>sibling = deletleaf(node);
 		if(!node.getColor())
-			correctdel(node2);
+			correctdel(sibling);
 		
 		return true;
 	}
 
-	 INode Min(INode node) {
-		while( node.getLeftChild() != nill )
-			node=node.getLeftChild();
-		return node;
-	}
-	 INode Max(INode node) {
-		while( node.getRightChild() != nill )
-			node=node.getRightChild();
-		return node;
-	}
 	  private void correctdel(INode node) { 
 		   while(node.getColor() == false && node != root) {
 				if(node.getParent().getLeftChild() == node)
@@ -496,7 +345,7 @@ public class RedBlackTree<T extends Comparable<T>, V> implements IRedBlackTree {
 		}
 	   
 		private INode correctLeft(INode<T,V>node) { 
-				INode  sibling = node.getParent().getRightChild(); // boolean black=false,red=true;
+				INode  sibling = node.getParent().getRightChild(); 
 				if(sibling.getColor() == true) {
 					sibling.setColor(true);
 					node.getParent().setColor(false);
@@ -525,7 +374,7 @@ public class RedBlackTree<T extends Comparable<T>, V> implements IRedBlackTree {
 		
 		
 		private INode correctRight(INode<T,V>node) {
-				INode sibling = node.getParent().getLeftChild(); //boolean black=false,red=true;
+				INode sibling = node.getParent().getLeftChild(); 
 				if(sibling.getColor() == true) {
 					sibling.setColor(true);
 					node.getParent().setColor(false);
@@ -559,29 +408,35 @@ public class RedBlackTree<T extends Comparable<T>, V> implements IRedBlackTree {
 			root = (Node) root.getLeftChild();
 			return root;
 		}
-		INode<T,V> p = node.getParent();
-		INode<T,V> term = nill;
+		INode  parent = node.getParent();
+		INode  sibling = nill;
 		if(node.getLeftChild() != nill)
-		{
-			term = node.getLeftChild();
-		}
-			
-		else {
-			term = node.getRightChild();
-
-		}
+   			 sibling = node.getLeftChild();			
+		else 
+			 sibling = node.getRightChild();		
 		
-		if(p.getLeftChild() == node)
-			p.setLeftChild(term);
+		if(parent.getLeftChild() == node)
+			 parent.setLeftChild(sibling);
 		else
-			p.setRightChild(term);
+			 parent.setRightChild(sibling);
 		
-		term.setParent(p);
+		sibling.setParent(parent);
 		
-		return term;
+		return sibling;
 	}	
 	
-	
+	private	 INode Min(INode node) {
+		while( node.getLeftChild() != nill )
+			node=node.getLeftChild();
+		return node;
+	}
+
+    private	 INode Max(INode node) {
+		while( node.getRightChild() != nill )
+			node=node.getRightChild();
+		return node;
+	}
+
 	
 
 

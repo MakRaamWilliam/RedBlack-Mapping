@@ -16,10 +16,7 @@ public class TreeMap<T extends Comparable<T>, V> implements ITreeMap {
 	private IRedBlackTree tree = new RedBlackTree();
 	private int size=0;
 	private ArrayList<Entry<T, V>> arr = new ArrayList<>();
-//	private Set<Comparable<T>> keys = new LinkedHashSet<>();
-//	private Collection values = new LinkedHashSet<>();
-//	private Set<Entry<T, V>> entries = new LinkedHashSet<>();
-
+	
 	@Override
 	public Entry ceilingEntry(Comparable key) { if(key == null ) throw new RuntimeErrorException(null);
 	INode node = ceilingnode(key);
@@ -36,20 +33,19 @@ public class TreeMap<T extends Comparable<T>, V> implements ITreeMap {
 
 	@Override
 	public void clear() {
-	tree.clear();
+		size=0;
+		tree.clear();
 	}
 
 	@Override
-	public boolean containsKey(Comparable key) {
-		
+	public boolean containsKey(Comparable key) {		
 		return tree.contains(key);
 	}
 
 	@Override
 	public   boolean containsValue(Object value) { if(value== null) throw new RuntimeErrorException(null);
 		if(tree.isEmpty()) return false;
-		 Set<Entry<T, V>> entries = new LinkedHashSet<>();
-	 	 inorder( tree.getRoot(),entries);
+	 	 inorder( tree.getRoot(),new LinkedHashSet<>());
 		 for(int i=0;i<arr.size();i++) {
 			 if(arr.get(i).getValue().equals(value)) return true;
 		 }
@@ -125,7 +121,7 @@ public class TreeMap<T extends Comparable<T>, V> implements ITreeMap {
 	public Set keySet() {
 		inorder(tree.getRoot(),new LinkedHashSet<>());
 	  Set<Comparable<T>> keys = new LinkedHashSet<>();
-  for(int i=0;i<arr.size();i++)
+    for(int i=0;i<arr.size();i++)
 	  keys.add(arr.get(i).getKey());
 		return keys;
 	}
@@ -215,7 +211,6 @@ public class TreeMap<T extends Comparable<T>, V> implements ITreeMap {
 	
 		 public INode ceilingnode(Comparable key) { if(key == null) throw  new RuntimeErrorException(null);
 			INode node = tree.getRoot(),temp=null; 
-	//		if( tree.search(key)  !=null ) {  node.setKey(key);node.setValue(tree.search(key));  return node; }
 			node=tree.getRoot(); 
 			while( node!= null && node.getKey()!= null ) { temp=node;
 				if(key.compareTo(node.getKey()) == 0 ) return  node;
@@ -234,7 +229,6 @@ public class TreeMap<T extends Comparable<T>, V> implements ITreeMap {
 		}
 			public INode flooringnode(Comparable key) { if(key == null) throw  new RuntimeErrorException(null);
 			INode node = tree.getRoot(),temp=null;
-	//		if( tree.search(key)  !=null ) {  node.setKey(key);node.setValue(tree.search(key));  return node; }
 			while( node!= null && node.getKey()!= null ) { temp=node;
 				if(key.compareTo(node.getKey()) == 0 ) return  node;
 				else if(key.compareTo(node.getKey())<0  ) node= node.getLeftChild();
@@ -258,8 +252,6 @@ public class TreeMap<T extends Comparable<T>, V> implements ITreeMap {
 		inorder( node.getLeftChild(),  entries );
 		arr.add(new  AbstractMap.SimpleEntry(node.getKey(), node.getValue()) );
 		entries.add(new  AbstractMap.SimpleEntry(node.getKey(), node.getValue()) );
-//		keys.add( (node.getKey()) );
-	//	values.add((V) node.getValue());
 		inorder( node.getRightChild(),entries);
 	}
 	
