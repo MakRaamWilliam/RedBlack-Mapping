@@ -1671,18 +1671,19 @@ public class UnitTest {
 		Queue<Field> q = new LinkedList<>();
 		
 		q.addAll(Arrays.asList(fields));
+		
 		while(!q.isEmpty()) {
 			Field cur = q.poll();
 			
 			System.out.println("field name " + cur.getType());
 			if (cur.getType().isPrimitive()) continue;
 			
-			if (cur.getType().isAssignableFrom(TreeMap.class) )
+			if (cur.getType().isAssignableFrom(TreeMap.class))
 				Assert.fail();
 			q.addAll(Arrays.asList(cur.getType().getDeclaredFields()));
-		} 
+		}
 		
-	 }
+	}
 	
 	private boolean validateBST(INode<Integer, String> node, INode<Integer, String> leftRange, INode<Integer, String> rightRange) {
 		if (node == null || node.isNull()) return true;
